@@ -1,0 +1,26 @@
+{
+  "is_default": false,
+  "modifiers": [],
+  "model": "dragonsurvival:dragon_model",
+  "animation": "dragonsurvival:dragon_center",
+  "emotes": "dragonsurvival:default_emotes",
+  "default_icon": "dragonsurvival:textures/gui/custom/body/center/default.png",
+  "texture_size": {
+    "width": 512,
+    "height": 512
+  },
+  "can_hide_wings": true,
+  "bones_to_hide_for_toggle": [
+    "WingLeft",
+    "WingRight",
+    "SmallWingLeft",
+    "SmallWingRight"
+  ],
+  "scaling_proportions": {
+    "width": 0.6,
+    "height": 2.0,
+    "eye_height": 1.8
+  },
+  "crouch_height_ratio": 0.83333333,
+  "rideable": true
+}

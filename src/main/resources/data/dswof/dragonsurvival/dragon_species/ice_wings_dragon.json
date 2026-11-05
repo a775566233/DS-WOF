@@ -1,0 +1,21 @@
+{
+  "bodies": [
+    "dswof:ice_wings_dragon"
+  ],
+  "abilities": ["dswof:ice_breath"],
+  "penalties": [],
+  "misc_resources": {
+    "altar_banner": "dragonsurvival:textures/gui/custom/altar/cave/altar_icon.png",
+    "ability_bar": "dragonsurvival:textures/gui/custom/casting_bars/cave/cast_bar.png",
+    "growth_crystal": {
+      "empty": "dragonsurvival:textures/gui/custom/stage/cave/point_main.png",
+      "full": "dragonsurvival:textures/gui/custom/stage/cave/point_hover.png"
+    },
+    "food_tooltip": {
+      "nutrition_icon": "",
+      "saturation_icon": ""
+    },
+    "primary_color": "#B84324",
+    "secondary_color": "#F5B45B"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "dragon_species.dswof.sky_dragon": "天空龙（联调原型）",
+  "dragon_species.dswof.sky_dragon.altar.desc": "验证附属龙种、体型与成长资源。当前复用默认外观。",
+  "dragon_species.dswof.sky_dragon.banner.desc": "天空龙原型",
+  "dragon_body.dswof.sky_body": "天空龙体型",
+  "dragon_body.dswof.sky_body.desc": "使用默认龙骨架与动画进行联调。",
+  "dragon_body.dswof.sky_body.wings": "显示翅膀",
+  "dragon_body.dswof.sky_body.wings.desc": "切换翼部骨骼的显示。"
+}

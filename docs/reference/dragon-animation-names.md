@@ -1,0 +1,116 @@
+# 默认龙动画名称
+
+来源：当前依赖 Dragon Survival 2.0.71 JAR 的 `assets/dragonsurvival/animations/dragon_center.json`。
+
+共 **104** 个动画键；引用 **185** 个不同骨骼。此清单不包含上游动画关键帧。
+
+名称大小写必须一致，没有 `animation.dragon.` 前缀。官方要求独立模型补齐标准动画；复用默认表情集合时也要支持它请求的动画。
+
+表中循环设置是当前默认文件的事实记录，供制作时参考，不表示把所有动作强制设成循环。自己的动作还需游戏内检查控制器过渡。
+
+| 动画键 | 默认 loop 设置 |
+| --- | --- |
+| `idle` | `true` |
+| `continuous_0` | `true` |
+| `statue_pose_0` | `true` |
+| `walk` | `true` |
+| `run` | `true` |
+| `fly` | `true` |
+| `fly_idle` | `true` |
+| `fly_animation_magic` | `true` |
+| `fly_soaring` | `true` |
+| `statue_pose_1` | `true` |
+| `fly_dive` | `true` |
+| `fly_dive_alt` | `true` |
+| `fly_spin` | `true` |
+| `fly_land` | `true` |
+| `fly_land_end` | `false` |
+| `cast_mass_buff` | `true` |
+| `mass_buff` | `true` |
+| `statue_pose_2` | `true` |
+| `cast_self_buff` | `true` |
+| `self_buff` | `true` |
+| `cast_magic_alt` | `true` |
+| `statue_pose_3` | `true` |
+| `magic_alt` | `true` |
+| `statue_pose_4` | `true` |
+| `sleep` | `true` |
+| `statue_pose_5` | `true` |
+| `sleeping_right` | `true` |
+| `sleep_left` | `true` |
+| `sleep_right` | `true` |
+| `dig` | `true` |
+| `jump` | `true` |
+| `land` | `false` |
+| `fall_loop` | `true` |
+| `sneak` | `true` |
+| `sneak_walk` | `true` |
+| `dig_sneak` | `true` |
+| `create_skyhook_riding` | `true` |
+| `climbing_up` | `true` |
+| `climbing_down` | `true` |
+| `swim` | `true` |
+| `swim_fast` | `true` |
+| `statue_pose_6` | `true` |
+| `sit` | `true` |
+| `statue_pose_7` | `true` |
+| `sit_dentist` | `true` |
+| `sit_on_magic_source` | `true` |
+| `statue_pose_8` | `true` |
+| `sitting_curled_tail_left` | `true` |
+| `sitting_curled_tail_right` | `true` |
+| `sitting_spinning_item` | `true` |
+| `statue_pose_9` | `true` |
+| `holding_paws_sitting` | `true` |
+| `statue_pose_10` | `true` |
+| `hugging_sitting` | `true` |
+| `shy_sitting` | `true` |
+| `sad_sitting` | `true` |
+| `resting_leaning_on_wall` | `true` |
+| `resting_left` | `true` |
+| `resting_right` | `true` |
+| `statue_pose_11` | `true` |
+| `resting_covering_with_wing_left` | `true` |
+| `resting_covering_with_wing_right` | `true` |
+| `resting_sleepy_left` | `true` |
+| `resting_sleepy_right` | `true` |
+| `resting_straight` | `true` |
+| `resting_on_back` | `true` |
+| `shy_lying` | `true` |
+| `sleeping_on_side_left` | `true` |
+| `sleeping_on_side_right` | `true` |
+| `sleeping_on_side_straight_left` | `true` |
+| `sleeping_on_side_straight_right` | `true` |
+| `rocking_on_back` | `true` |
+| `spinning_on_back` | `true` |
+| `vibing_sitting` | `true` |
+| `vibing_standing` | `true` |
+| `flapping_wings_standing` | `true` |
+| `statue_pose_12` | `true` |
+| `flapping_wings_standing_biped` | `true` |
+| `holding_passenger_standing_biped` | `true` |
+| `hugging_sitting_winged` | `true` |
+| `shaking_standing` | `false` |
+| `blend_licking` | `true` |
+| `blend_dig` | `true` |
+| `blend_sad` | `true` |
+| `blend_blep` | `true` |
+| `blend_angry` | `true` |
+| `blend_maw` | `true` |
+| `blend_sniffing` | `true` |
+| `blend_yawning` | `true` |
+| `blend_close_eyes` | `true` |
+| `blend_hand_rock` | `false` |
+| `blend_hand_paper` | `false` |
+| `blend_hand_scissors` | `false` |
+| `spell_charge` | `true` |
+| `spell_shot` | `true` |
+| `tail_turn` | `true` |
+| `head_turn` | `true` |
+| `empty` | `true` |
+| `use_item_right` | `true` |
+| `use_item_left` | `true` |
+| `eat_item_right` | `true` |
+| `eat_item_left` | `true` |
+| `bite` | `true` |
+| `breath` | `true` |

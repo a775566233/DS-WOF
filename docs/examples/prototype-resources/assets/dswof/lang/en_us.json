@@ -1,0 +1,9 @@
+{
+  "dragon_species.dswof.sky_dragon": "Sky Dragon (Prototype)",
+  "dragon_species.dswof.sky_dragon.altar.desc": "Addon species, body and growth-resource prototype using the default appearance.",
+  "dragon_species.dswof.sky_dragon.banner.desc": "Sky Dragon Prototype",
+  "dragon_body.dswof.sky_body": "Sky Dragon Body",
+  "dragon_body.dswof.sky_body.desc": "Default dragon skeleton and animations for integration testing.",
+  "dragon_body.dswof.sky_body.wings": "Show Wings",
+  "dragon_body.dswof.sky_body.wings.desc": "Toggle the wing bones."
+}

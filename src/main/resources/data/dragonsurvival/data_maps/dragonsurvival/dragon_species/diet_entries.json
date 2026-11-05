@@ -1,0 +1,43 @@
+{
+  "values": {
+    "dswof:sky_dragon": [
+      {
+        "items": "minecraft:beef"
+      },
+      {
+        "items": "minecraft:cooked_beef"
+      },
+      {
+        "items": "minecraft:chicken"
+      },
+      {
+        "items": "minecraft:cooked_chicken"
+      }
+    ],
+    "dswof:ice_wings_dragon": [
+      {
+        "item": "dragonsurvival:frozen_raw_fish",
+        "retain_effects": true,
+        "properties": {
+          "nutrition": 6,
+          "saturation": 9,
+          "can_always_eat": true
+        }
+      },
+      {
+        "item": "minecraft:snowball",
+        "properties": {
+          "nutrition": 0.5,
+          "saturation": 0.5
+        }
+      },
+      {
+        "item": "minecraft:snow_block",
+        "properties": {
+          "nutrition": 2,
+          "saturation": 1
+        }
+      }
+    ]
+  }
+}

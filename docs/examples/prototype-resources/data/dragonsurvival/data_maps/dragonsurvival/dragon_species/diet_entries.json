@@ -1,0 +1,18 @@
+{
+  "values": {
+    "dswof:sky_dragon": [
+      {
+        "items": "minecraft:beef"
+      },
+      {
+        "items": "minecraft:cooked_beef"
+      },
+      {
+        "items": "minecraft:chicken"
+      },
+      {
+        "items": "minecraft:cooked_chicken"
+      }
+    ]
+  }
+}
