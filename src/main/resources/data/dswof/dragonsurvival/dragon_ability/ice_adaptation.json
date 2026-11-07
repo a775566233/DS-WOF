@@ -1,0 +1,56 @@
+{
+  "activation": {
+    "activation_type": "dragonsurvival:passive"
+  },
+  "can_be_manually_disabled": false,
+  "actions": [
+    {
+      "target_selection": {
+        "target_type": "dragonsurvival:self",
+        "applied_effects": {
+          "targeting_mode": "allies_and_self",
+          "entity_effect": [
+            {
+              "effect_type": "dragonsurvival:modifier",
+              "modifiers": [
+                {
+                  "base": {
+                    "id": "dswof:ice_adaptation",
+                    "custom_icon": "dragonsurvival:textures/ability_effect/fire_immunity.png",
+                    "is_hidden": false,
+                    "should_remove_automatically": true
+                  },
+                  "modifiers": [
+                    {
+                      "attribute": "dswof:freezing_immunity",
+                      "amount": 1.0,
+                      "operation": "add_value"
+                    },
+                    {
+                      "attribute": "dswof:powder_snow_mobility",
+                      "amount": 1.0,
+                      "operation": "add_value"
+                    },
+                    {
+                      "attribute": "dswof:ice_grip",
+                      "amount": 1.0,
+                      "operation": "add_value"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "icon": {
+    "texture_entries": [
+      {
+        "from_level": 0,
+        "texture_resource": "dragonsurvival:abilities/cave/cave_dragon_1"
+      }
+    ]
+  }
+}
