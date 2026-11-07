@@ -1,0 +1,36 @@
+{
+  "condition": {
+    "condition": "minecraft:reference",
+    "name": "dswof:hot_without_ice"
+  },
+  "effect": {
+    "penalty_type": "dragonsurvival:modifier",
+    "modifiers": [
+      {
+        "base": {
+          "id": "dswof:hot_ice_breath",
+          "duration": 40,
+          "should_remove_automatically": true,
+          "early_removal_condition": {
+            "condition": "minecraft:inverted",
+            "term": {
+              "condition": "minecraft:reference",
+              "name": "dswof:hot_without_ice"
+            }
+          }
+        },
+        "modifiers": [
+          {
+            "attribute": "dswof:ice_breath_multiplier",
+            "amount": -0.5,
+            "operation": "add_multiplied_total"
+          }
+        ]
+      }
+    ]
+  },
+  "trigger": {
+    "penalty_trigger": "dragonsurvival:instant",
+    "trigger_rate": 20
+  }
+}

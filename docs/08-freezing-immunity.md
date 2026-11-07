@@ -4,7 +4,9 @@
 
 ## 预期行为
 
-仅当玩家当前处于 `dswof:ice_wings_dragon` 龙形态时生效。切回人类或其他龙种后，恢复原有规则。
+由自带被动 `dswof:ice_adaptation` 授予 `dswof:freezing_immunity` 属性。当前只有冰翼龙引用该技能，因此通常只有冰翼龙享有；底层不再硬编码龙种 ID。需要玩家处于龙形态且该属性大于 0。切回人类会立即失去免疫；其他龙种只有被授予相同属性时才会享有。
+
+技能配置和细雪行动、防滑接入见 [冰雪适应与细雪行动](14-ice-adaptation-and-powder-snow.md)。
 
 | 来源 | 冰翼龙的表现 |
 | --- | --- |
@@ -18,7 +20,7 @@
 
 ## 实现分工
 
-1. `src/main/java/org/wgx/dswof/dragonsurvival/IceWingFreezingImmunity.java` 统一检查玩家的当前龙种，并通过 `LivingIncomingDamageEvent` 取消冻结标签伤害。对 `dswof:ice_breath` 明确放行，减伤由冰息技能执行，避免重复减半。
+1. `ice_adaptation.json` 使用原版 `dragonsurvival:modifier` 为自身添加冻结免疫属性；不写 `upgrade`，作为自带的 1 级被动。`IceAdaptation.java` 检查龙形态及属性值。`src/main/java/org/wgx/dswof/dragonsurvival/IceWingFreezingImmunity.java` 委托该检查，并通过 `LivingIncomingDamageEvent` 取消冻结标签伤害。对 `dswof:ice_breath` 明确放行，减伤由冰息技能执行，避免重复减半。
 2. `src/main/java/org/wgx/dswof/mixin/LivingEntityMixin.java` 使冰翼龙的 `canFreeze()` 返回 `false`。细雪无法正常积累冻结值，冰息进入已有的免疫目标减伤分支。
 3. `src/main/java/org/wgx/dswof/mixin/EntityMixin.java` 将冰翼龙通过 `setTicksFrozen(int)` 写入的值改为 0，覆盖技能直接设置冻结值的情况。变身前已有的冻结值也会在原版下一次更新时清除，原版随后更新冻结减速。
 4. `IceBreathAbilityEntityEffect.apply()` 已有 `!target.canFreeze()` 判断：伤害乘以倍率，并跳过增加冻结积累值。倍率在 `data/dswof/dragonsurvival/dragon_ability/ice_breath.json` 配置。
@@ -27,7 +29,7 @@
 
 本需求下，保持 `dswof:ice_breath` 为独立伤害类型，不把它加入 `minecraft:is_freezing` 标签。先前为 CelestialArtifacts 冰冻之戒提出的加标签方案，适用于“戒指完全免疫冰息直接伤害”的另一种需求。
 
-冰冻之戒按标签取消伤害，不会自动阻止原版冻结积累，也不会自动使 `canFreeze()` 为 false。本附属的冰翼龙使用自己的龙种免疫判断，不依赖该戒指或 L2DamageTracker。
+冰冻之戒按标签取消伤害，不会自动阻止原版冻结积累，也不会自动使 `canFreeze()` 为 false。本附属通过 DS 技能授予的属性控制免疫，不依赖该戒指或 L2DamageTracker。原版冻结是 `ticksFrozen`，不是可用 `effect_modification` 直接屏蔽的某个冻结药水效果；因此仍需底层 Mixin 执行。
 
 如果外部数据包仍为冰息添加冻结标签，本附属自己的免疫事件会放行冰息，但其他模组（例如冰冻之戒）仍可能取消它。
 

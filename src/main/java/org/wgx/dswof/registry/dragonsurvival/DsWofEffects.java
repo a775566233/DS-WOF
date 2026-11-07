@@ -1,4 +1,4 @@
-package org.wgx.dswof.dragonsurvival.mob_effect;
+package org.wgx.dswof.registry.dragonsurvival;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -6,6 +6,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.wgx.dswof.DsWof;
+import org.wgx.dswof.dragonsurvival.mob_effect.FrostEffect;
 
 public class DsWofEffects {
     public static final DeferredRegister<MobEffect> REGISTRY;

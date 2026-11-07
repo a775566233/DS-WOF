@@ -1,4 +1,12 @@
 {
+  "dragon_ability.dswof.ice_wings": "Ice Wings",
+  "dragon_ability.dswof.ice_wings.desc": "Spread your wings and take to the skies. Unlocks when the DS-WOF Unlock Wings data pack is enabled or flight has been granted.",
+  "datapack.dswof.unlock_wings.description": "Unlocks Ice Wings flight and prevents the ender dragon's mark from disabling it.",
+  "dragon_ability.dswof.ice_adaptation": "Ice Adaptation",
+  "dragon_ability.dswof.ice_adaptation.desc": "You won't be frozen, your sharp serrated claws can keep you stable on the ice and perfectly adapt to the freezing and sinking caused by fine snow.",
+  "attribute.dswof.freezing_immunity": "Freezing Immunity",
+  "attribute.dswof.powder_snow_mobility": "Powder Snow Mobility",
+  "attribute.dswof.ice_grip": "Ice Grip",
   "dragon_species.dswof.sky_dragon": "Sky Dragon (Prototype)",
   "dragon_species.dswof.sky_dragon.altar.desc": "Addon species, body and growth-resource prototype using the default appearance.",
   "dragon_species.dswof.sky_dragon.banner.desc": "Sky Dragon Prototype",

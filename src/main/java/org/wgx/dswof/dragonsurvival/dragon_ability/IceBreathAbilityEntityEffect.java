@@ -29,6 +29,7 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import org.jetbrains.annotations.NotNull;
 import org.wgx.dswof.DsWof;
 import org.slf4j.Logger;
+import org.wgx.dswof.registry.dragonsurvival.DsWofAttributes;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -54,18 +55,21 @@ public record IceBreathAbilityEntityEffect(
         int resetAfterTicks,
         // 施法者伤害缩放属性，与 DS 内置 damage 效果一致
         Holder<Attribute> scale,
+        // 动态倍数，适用于削弱和增强
+        Holder<Attribute> multiplier,
+        // 动态表达式
         Expression expression
 ) implements AbilityEntityEffect {
 
     public static final Expression DEFAULT_EXPRESSION = new Expression(
-            "MIN(max_damage, amount + growth_per_unit * exposure_ticks / growth_interval_ticks) * scale"
+            "MIN(max_damage, amount + growth_per_unit * exposure_ticks / growth_interval_ticks) * scale * multiplier"
     );
 
     // 加载时声明的变量必须与 calculateDamage 中实际注入的变量一致。
     public static final Codec<Expression> EXPRESSION_CODEC = MiscCodecs.expressionCodec(
             "amount", "scale", "ability_level", "experience_level", "experience_points",
             "growth", "current_movement_speed", "growth_per_unit", "growth_interval_ticks",
-            "max_damage", "exposure_ticks", "exposure_seconds"
+            "max_damage", "exposure_ticks", "exposure_seconds", "multiplier"
     );
 
     public static final MapCodec<IceBreathAbilityEntityEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
@@ -81,6 +85,8 @@ public record IceBreathAbilityEntityEffect(
                     .forGetter(IceBreathAbilityEntityEffect::resetAfterTicks),
             Attribute.CODEC.optionalFieldOf("scale", DSAttributes.DRAGON_ABILITY_DAMAGE)
                     .forGetter(IceBreathAbilityEntityEffect::scale),
+            Attribute.CODEC.optionalFieldOf("multiplier", DsWofAttributes.ICE_BREATH_MULTIPLIER)
+                    .forGetter(IceBreathAbilityEntityEffect::multiplier),
             EXPRESSION_CODEC.optionalFieldOf("expression", DEFAULT_EXPRESSION)
                     .forGetter(IceBreathAbilityEntityEffect::expression)
     ).apply(instance, IceBreathAbilityEntityEffect::new));
@@ -156,6 +162,7 @@ public record IceBreathAbilityEntityEffect(
         expression.setVariable("exposure_ticks", BigDecimal.valueOf(exposureTicks));
         expression.setVariable("exposure_seconds", BigDecimal.valueOf(exposureTicks)
                 .divide(BigDecimal.valueOf(20)));
+        expression.setVariable("multiplier", BigDecimal.valueOf(dragon.getAttributeValue(multiplier)));
         return expression.eval().floatValue();
     }
 

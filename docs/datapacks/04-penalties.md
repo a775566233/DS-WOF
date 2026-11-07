@@ -19,6 +19,8 @@
 
 分派字段为 `penalty_type`，下表类型前缀均为 `dragonsurvival:`。标为必填的字段位于同一个 effect 对象内。
 
+`effect` 没有通用的 `condition` 字段；字段是否有效由对应 `penalty_type` 的 CODEC 决定。例如 `modifier` 不读取 `effect.condition`，其持续实例的移除条件位于 `effect.modifiers[].base.early_removal_condition`；`fear` 的 `effect.fears[].entity_condition` 则筛选被吓跑的生物。不要将其他技能或效果类型支持的条件字段直接移植到这里。
+
 | 类型 | 字段 | 行为 |
 | --- | --- | --- |
 | `take_damage` | `damage_type`：必填 DamageType ID；`amount`：必填 float | 直接伤害玩家；amount 是常数，不能填 LV 等级公式 |
@@ -67,14 +69,31 @@ PotionData、DamageModification、ModifierWithDuration、EffectModification 与[
 | `attribute` | Attribute ID；可选；`dragonsurvival:penalty_resistance_time` | 决定储备上限的属性 |
 | `trigger_rate` | 整数 >= 1；必填 | 储备耗尽后的惩罚检查间隔 tick |
 | `reduction_rate` | float；必填 | 不利条件下每 tick 减少多少储备 |
-| `regeneration_rate` | float；必填 | 条件不成立时每 tick 恢复多少储备 |
+| `regeneration_rate` | float；必填 | 条件不成立时每 tick 恢复的上限比例；恢复量 = 储备上限 × 此值 |
 | `recovery_items` | 数组；可选；`[]` | 消耗指定物品时恢复储备 |
 | `display_like_hunger_bar` | 布尔；可选；false | 使用类似饥饿条的显示形式 |
 | `particles_on_trigger` | ParticleOptions；可选；无 | 不利条件中到达检查间隔时生成粒子；不等同于伤害粒子 |
 
 每个 recovery_items 条目必须有 `item_predicates`（ItemPredicate 数组，任一匹配）和 `percent_restored`（float；0.5 表示上限的一半）。
 
+`supply_type` 只是储备存储 ID，不需要为每个 ID 注册 Java 类型；`attribute` 才决定其上限。被动升级通过修改同一属性提高容量，不通过技能或修饰实例 ID 与储备直接绑定。多种耐受分别升级、统一升级与专属属性接入，见[环境弱点第 10 节](../11-environment-penalties.md#10-多种耐受储备-id上限属性与被动如何关联)。
+
 运行顺序是每 tick 推进计数，再根据 condition 消耗或恢复。条件不成立时恢复并直接退出；条件成立时到达间隔才检查是否耗尽。`trigger_rate` 不控制储备每 tick 的消耗速率。以最大储备 200、reduction_rate 1 为例，连续处于不利环境约 10 秒后才开始进入可受罚状态。
+
+消耗是每 tick 扣固定点数，恢复是每 tick 加上限的一定比例。例如 `regeneration_rate = 0.013` 表示每 tick 恢复上限的 1.3%，理想情况下从空到满约需 77 tick（20 TPS 下约 3.85 秒）。它不是每 tick 只恢复 0.013 点。上限由属性改变时，DS 保留当前储备的剩余百分比；与可升级被动对接的完整例子见[环境弱点第 7 节](../11-environment-penalties.md#7-对接原版被动升级等级越高耐热越久)。
+
+### 修改速率后，已有存档的刷新
+
+DS 2.0.71 将当前储备的 `reduction_rate`、`regeneration_rate` 与剩余量一起保存。运行时只有发现储备上限变化或储备不存在，才会用当前 JSON 参数重新初始化；登录时也不会无条件重建仍然有效的储备。因此只修改速率后，已有存档可能继续使用旧值，即使重新登录也不保证更新。重新加载包含修改的动态注册表后，可通过临时改变上限属性触发初始化，保留当前剩余百分比；使用新的测试角色也可验证新参数。
+
+例如在生存模式的测试世界依次执行下列命令，两条之间等待至少一个游戏 tick，让弱点逻辑观察到上限变化：
+
+```mcfunction
+/attribute @s dswof:heat_resistance_time modifier add dswof:refresh_heat_supply 1 add_value
+/attribute @s dswof:heat_resistance_time modifier remove dswof:refresh_heat_supply
+```
+
+第一条临时增加 1 点上限，第二条移除该临时修饰，不改变属性基础值。属性必须实际发生变化；若已到达最大值，需改用有效的负向调整。仅在已加载新 JSON 后执行这一步；`/reload` 是否足够更新当前自定义动态注册表与技能引用，应另行确认，开发时建议重启测试世界或客户端。
 
 ## 完整示例：在雨中受伤
 

@@ -1,0 +1,94 @@
+{
+  "activation": {
+    "activation_type": "dragonsurvival:passive"
+  },
+  "upgrade": {
+    "upgrade_type": "dragonsurvival:experience_points",
+    "maximum_level": 10,
+    "experience_cost": {
+      "type": "minecraft:linear",
+      "base": 36.0,
+      "per_level_above_first": 36.0
+    }
+  },
+  "actions": [
+    {
+      "target_selection": {
+        "applied_effects": {
+          "entity_effect": [
+            {
+              "effect_type": "dragonsurvival:modifier",
+              "modifiers": [
+                {
+                  "base": {
+                    "id": "dswof:ice_magic",
+                    "is_hidden": true,
+                    "should_remove_automatically": true
+                  },
+                  "modifiers": [
+                    {
+                      "amount": {
+                        "type": "minecraft:linear",
+                        "base": 1.0,
+                        "per_level_above_first": 1.0
+                      },
+                      "attribute": "dragonsurvival:mana",
+                      "operation": "add_value"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "targeting_mode": "allies_and_self"
+        },
+        "target_type": "dragonsurvival:self"
+      }
+    },
+    {
+      "target_selection": {
+        "target_type": "dragonsurvival:self",
+        "applied_effects": {
+          "targeting_mode": "allies_and_self",
+          "target_conditions": {
+            "condition": "minecraft:reference",
+            "name": "dswof:on_ice"
+          },
+          "entity_effect": [
+            {
+              "effect_type": "dragonsurvival:modifier",
+              "modifiers": [
+                {
+                  "base": {
+                    "id": "dswof:ice_mana_regeneration",
+                    "is_hidden": true,
+                    "should_remove_automatically": true
+                  },
+                  "modifiers": [
+                    {
+                      "attribute": "dragonsurvival:mana_regeneration",
+                      "amount": {
+                        "type": "minecraft:linear",
+                        "base": 0.03,
+                        "per_level_above_first": 0.03
+                      },
+                      "operation": "add_value"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "icon": {
+    "texture_entries": [
+      {
+        "from_level": 0,
+        "texture_resource": "dragonsurvival:abilities/cave/cave_magic_0"
+      }
+    ]
+  }
+}

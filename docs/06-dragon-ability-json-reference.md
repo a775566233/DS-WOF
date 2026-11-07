@@ -455,6 +455,14 @@ PotionData 的所有字段：
 
 `flight.level_requirement`、`spin.level_requirement` 指**技能等级门槛**，不要与升级配置中的玩家经验等级门槛混淆。`has_stable_swim` 是对象，不能直接填 JSON 布尔值。
 
+飞行的授予状态与飞行技能是两层数据。原版翅膀技能使用 `condition_based` 升级，检查 `dragon_predicate.flight_was_granted: true`；该条件满足时技能升到 1 级，再由 `flight.level_requirement: 1` 开启飞行。`flight_was_granted` 是条件查询字段，写进 JSON 不会自动授予飞行。以龙形态使用 `dragonsurvival:wing_grant` 物品可以将这个玩家状态设为 true；测试时可用 `/give @s dragonsurvival:wing_grant` 获取并右键使用。
+
+龙种界面的飞行提示来自玩家当前的 `MagicData`，而非直接读取龙种 JSON：没有飞行/旋转权限时，若当前技能实例中找不到 `FlightEffect`，显示“该物种无法获得飞行能力”；若存在该效果但尚未获得权限，显示暂时不能飞行的提示。前一项检查使用 `AbilityCheck.HAS_EFFECT`，不检查技能等级，因此 0 级翅膀技能也能通过“是否存在飞行效果”的检查。新增技能后已有角色的实例处理见[开发验证第 5 节](15-development-validation.md#5-技能定义与玩家技能实例)。
+
+DS 的内置 `unlock_wings` 数据包通过覆盖原版三种翅膀技能 ID 改变解锁规则，不会自动覆盖附属的其他命名空间 ID。其启用策略见[内置数据包说明](datapacks/09-worldgen-and-built-in-packs.md#六个内置数据包)。
+
+该包的翅膀定义省略 `upgrade`。`DragonAbility.getMaxLevel()` 在没有升级规则时返回 1，`MagicData.addAbility()` / `refresh()` 会以最大等级初始化，因此新实例直接为 1 级。附属若要提供无需额外解锁的飞行，也可以省略 `upgrade`，保留 `flight.level_requirement: 1`。已有 0 级实例不会因为删除升级规则就自动变为 1 级；可按[技能实例调试说明](15-development-validation.md#5-技能定义与玩家技能实例)重建指定实例。技能规则独立于此后是否启用原版 `unlock_wings` 包。
+
 ### 9.6 持续效果、属性与物品
 
 | `effect_type` 短名 | 字段与默认值 | 作用 |
@@ -528,6 +536,8 @@ PotionData 的所有字段：
 | `is_hidden` | 布尔；可选；false | 隐藏持续效果的提示显示 |
 
 自动清理并不简单等同于“施法结束就移除”：当前主动技能的检查采用技能是否启用，被动技能则检查是否正在应用效果。需要精确时长时填写正的 `duration`；不建议用 0 表示立即移除，运行器的倒计时实现先递减再判断是否等于 0。
+
+对于由 `dragon_penalty` 创建并记录了惩罚来源的持续实例，`should_remove_automatically: true` 还会重新检查来源惩罚的顶层 `condition`；该条件变为 false 时移除实例。关闭自动清理后，顶层条件失效只阻止后续施加，已有实例仍需等待时长耗尽或其他移除机制。`early_removal_condition` 是独立检查，不要求启用 `should_remove_automatically`；其结果为 true 时移除当前实例，而不是阻止创建实例。如果它恰好是顶层条件的取反，就与上述自动移除规则存在重叠。
 
 这是配置结构。源码中保存运行状态的 `base_data`、`common_data`、`current_duration`、`entity_uuid` 等序列化字段，不能照搬到技能 JSON 的 base 中。
 
@@ -679,9 +689,129 @@ ColorEntry 的 `color` 必填，`alpha` 可选默认 0.3，表示透明度。颜
 
 常用组合是 `condition: minecraft:any_of` 加 `terms`（任一成立）、`minecraft:all_of` 加 `terms`（全部成立）、`minecraft:inverted` 加 `term`（取反）、`minecraft:entity_properties` 加 `entity` / `predicate`（实体条件）。这些是带 Minecraft 自身结构的条件对象，不是任意字符串表达式。
 
+#### 条件可以嵌套
+
+`terms` 中的每一项本身仍是一个完整的 Loot 条件，因此可以继续放入 `all_of`、`any_of`、`inverted` 或其他条件。`inverted` 的 `term` 也接受任意条件对象。嵌套没有固定的“一层限制”，但每个节点必须符合自己的 CODEC；例如 `all_of` 要用 `terms` 数组，`inverted` 要用单个 `term`。
+
+下面的结构表示“在下界，并且不满足 `dswof:on_ice`”：
+
+```json
+{
+  "condition": "minecraft:all_of",
+  "terms": [
+    {
+      "condition": "minecraft:entity_properties",
+      "entity": "this",
+      "predicate": {
+        "location": {
+          "dimension": "minecraft:the_nether"
+        }
+      }
+    },
+    {
+      "condition": "minecraft:inverted",
+      "term": {
+        "condition": "minecraft:reference",
+        "name": "dswof:on_ice"
+      }
+    }
+  ]
+}
+```
+
+在 DS 的 `dragon_penalty` 中，顶层 `condition` 为假时不会触发该弱点；在 `usage_blocked` 中，条件为真反而会禁止技能。因此复制一个条件对象时，必须先确认它所在字段的“真值含义”。
+
+### 12.2 `minecraft:reference` 与可复用条件文件
+
+`minecraft:reference` 是原版注册的 **Loot 条件类型**，不是实体谓词，也不是标签。它的 CODEC 只有一个字段：
+
+```json
+{
+  "condition": "minecraft:reference",
+  "name": "dswof:on_ice"
+}
+```
+
+`name` 使用 `minecraft:predicate` 注册表中的资源键，对应文件路径为：
+
+```text
+data/dswof/predicate/on_ice.json
+```
+
+该文件内容可以是任意一个完整 Loot 条件，包括继续嵌套 `all_of`、`any_of`、`inverted` 和其他条件。例如本工程的 `on_ice.json` 使用 `any_of`，把站在 `#dswof:ice_blocks` 上和位于细雪中的两种情况合并。引用文件时写 `dswof:on_ice`，不要写文件扩展名，也不要写成 `#dswof:on_ice`；井号只用于标签。
+
+引用有两个限制：资源键必须存在，且不能形成递归引用（A 引用 B，B 又引用 A）。找不到文件时条件测试为 false，并会在日志中报告未知条件。`reference` 只是复用条件，不会复制或修改被引用文件的内容。
+
+### 12.3 Minecraft 1.21.1 原版 Loot 条件类型
+
+以下列表来自本工程使用的 `neoforge-21.1.256` 对应 Minecraft 1.21.1 的 `LootItemConditions` 注册表，共 19 个原版条件类型。它们都可以出现在 DS 接受 Loot 条件的位置，但能否真正测试成功取决于 DS 创建的 `LootContext` 是否提供所需参数；例如技能使用检查通常没有工具、爆炸半径或伤害源上下文。
+
+| 条件 ID | 字段 | 功能与注意事项 |
+| --- | --- | --- |
+| `minecraft:all_of` | `terms`: 条件数组 | 所有子条件都为真；子条件可继续嵌套 |
+| `minecraft:any_of` | `terms`: 条件数组 | 至少一个子条件为真 |
+| `minecraft:inverted` | `term`: 条件 | 取反 |
+| `minecraft:reference` | `name`: predicate 资源键 | 引用 `data/<namespace>/predicate/<path>.json` |
+| `minecraft:entity_properties` | `entity`: `this`、`attacker`、`direct_attacker`、`attacking_player`；`predicate`: EntityPredicate（可选） | 检查指定实体；DS 最常用的是 `entity: "this"` 和 `predicate.location` / `predicate.stepping_on` |
+| `minecraft:location_check` | `predicate`: LocationPredicate（可选）；`offsetX`、`offsetY`、`offsetZ`（可选，默认 0） | 检查 LootContext 的 `ORIGIN` 位置；与 `entity_properties.predicate.location` 的实体检查对象不同 |
+| `minecraft:weather_check` | `raining`、`thundering`（布尔，可选） | 检查当前维度是否下雨或雷暴；至少提供一个字段才有实际筛选作用 |
+| `minecraft:time_check` | `value`: IntRange；`period`（长整数，可选） | 检查世界时间；有 `period` 时先取时间对该值的模 |
+| `minecraft:random_chance` | `chance`: NumberProvider，通常为数字 | 按概率随机成功，范围通常为 0～1；每次测试都会重新抽样 |
+| `minecraft:random_chance_with_enchanted_bonus` | `unenchanted_chance`；`enchanted_chance`: LevelBasedValue；`enchantment`: 附魔 ID | 根据攻击实体持有的指定附魔等级提高概率；需要攻击实体上下文 |
+| `minecraft:killed_by_player` | 无 | 检查 LootContext 是否有“最后伤害来自玩家”参数 |
+| `minecraft:entity_scores` | `scores`: 目标计分板名到 IntRange 的映射；`entity`: 实体目标 | 检查实体的计分板分数；目标或计分板不存在时失败 |
+| `minecraft:block_state_property` | `block`: 方块 ID；`properties`: 方块状态属性匹配（可选） | 检查 LootContext 提供的方块状态；不是检查实体脚下方块 |
+| `minecraft:match_tool` | `predicate`: ItemPredicate（可选） | 检查 LootContext 的工具；技能使用上下文通常没有 `TOOL` |
+| `minecraft:table_bonus` | `enchantment`: 附魔 ID；`chances`: 非空概率数组 | 根据工具上的附魔等级选择概率并随机测试；需要工具上下文 |
+| `minecraft:survives_explosion` | 无 | 根据爆炸半径随机判断物品是否存活；没有爆炸参数时原版实现返回真 |
+| `minecraft:damage_source_properties` | `predicate`: DamageSourcePredicate（可选） | 检查伤害源和来源位置；需要 `DAMAGE_SOURCE` 与 `ORIGIN` |
+| `minecraft:value_check` | `value`: NumberProvider；`range`: IntRange | 把数值提供器结果与整数范围比较 |
+| `minecraft:enchantment_active_check` | `active`: 布尔 | 检查附魔触发上下文是否处于激活状态 |
+
+表中的 `EntityPredicate`、`LocationPredicate`、`ItemPredicate`、`DamageSourcePredicate` 是条件内部的另一层数据结构，不能把它们的字段直接提升为外层条件。例如 `dimension` 应放在 `entity_properties.predicate.location.dimension` 中，而不是写成 `{ "condition": "minecraft:dimension" }`。同样，`#dswof:ice_blocks` 是方块标签，`#dswof:hot_environment` 是生物群系标签，它们只在对应的 `blocks` / `biomes` 等字段中使用。
+
+### 12.4 常用实体谓词字段与标签
+
+`minecraft:entity_properties` 的 `predicate` 使用原版 `EntityPredicate`。在 DS 的环境判断中，最常用的结构如下：
+
+| 路径 | 类型 | 功能 |
+| --- | --- | --- |
+| `predicate.location.dimension` | 维度 ID | 检查实体所在维度，例如 `minecraft:the_nether` |
+| `predicate.location.biomes` | 生物群系 ID 或 `#namespace:tag` | 检查实体所在生物群系或生物群系标签 |
+| `predicate.location.block` | 世界生成 BlockPredicate | 检查实体位置处的方块匹配 |
+| `predicate.location.fluid` | 世界生成 FluidPredicate | 检查实体位置处的流体匹配 |
+| `predicate.location.light` | 光照范围 | 检查方块光照等级 |
+| `predicate.location.can_see_sky` | 布尔 | 检查位置是否能看到天空 |
+| `predicate.stepping_on` | 位置 + 方块/流体谓词 | 检查实体脚下方块，适合站在冰块上触发 |
+| `predicate.type` | 实体类型 ID 或标签 | 检查实体类型 |
+| `predicate.type_specific` | 类型专属谓词 | 检查玩家、动物等实体的专属状态 |
+
+示例：
+
+```json
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "stepping_on": {
+      "block": {
+        "blocks": "#dswof:ice_blocks"
+      }
+    },
+    "location": {
+      "biomes": "#dswof:hot_environment"
+    }
+  }
+}
+```
+
+这是“站冰且处于炎热群系”的实体条件；它不是 `minecraft:reference`，也不会自动读取 `data/dswof/predicate/on_ice.json`。如需复用现有文件，应把对应位置替换为 `minecraft:reference`，再用 `inverted` 取反。
+
 技能条件不一定具有战利品表的全部参数，例如工具、伤害源、方块状态是否存在取决于实际事件 / targeting 创建的上下文。将某个条件从“受击事件”复制到“禁用使用”时需要重新检查它依赖什么上下文。
 
-### 12.2 原版技能常用的 DS 实体子谓词
+原版“站在特定方块上加成”的被动使用 `minecraft:entity_properties` 的 `predicate.stepping_on.block.blocks`，标签引用写为 `"#命名空间:标签"`。例如炽焰魔法检查 `#dragonsurvival:warm_blocks`，洞穴健将检查 `#dragonsurvival:speeds_up_cave_dragon`。这属于 Minecraft EntityPredicate，完整配置与站冰回蓝示例见 [站方块被动](13-standing-block-passives.md)。
+
+### 12.5 原版技能常用的 DS 实体子谓词
 
 它们放在 `minecraft:entity_properties` 的 `predicate.type_specific` 中。
 
@@ -703,7 +833,7 @@ ColorEntry 的 `color` 必填，`alpha` 可选默认 0.3，表示透明度。颜
 
 WeatherPredicate 有四个可选布尔字段：`is_raining`、`is_thundering`、`is_snowing`、`is_raining_or_snowing`。true 表示要求是该天气，false 表示要求不是，省略不检查。`weather_predicate: {}` 本身不表示“正在下雨”。
 
-### 12.3 不同的“类型”和“谓词”不能互换
+### 12.6 不同的“类型”和“谓词”不能互换
 
 | 对象 | 格式与作用 |
 | --- | --- |

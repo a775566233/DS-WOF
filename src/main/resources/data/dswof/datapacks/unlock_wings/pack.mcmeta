@@ -1,0 +1,11 @@
+{
+  "features": {
+    "enabled": []
+  },
+  "pack": {
+    "description": {
+      "translate": "datapack.dswof.unlock_wings.description"
+    },
+    "pack_format": 48
+  }
+}

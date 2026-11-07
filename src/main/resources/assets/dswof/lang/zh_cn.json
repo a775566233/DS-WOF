@@ -1,4 +1,12 @@
 {
+  "dragon_ability.dswof.ice_wings": "冰翼",
+  "dragon_ability.dswof.ice_wings.desc": "展开双翼，翱翔天空。启用 DS-WOF 的直接解锁翅膀数据包，或获得飞行授权后解锁。",
+  "datapack.dswof.unlock_wings.description": "直接解锁冰翼飞行，并使末影龙无法通过标记禁用该能力。",
+  "dragon_ability.dswof.ice_adaptation": "冰雪适应",
+  "dragon_ability.dswof.ice_adaptation.desc": "你不会被冻结，你锐利带锯齿的利爪能够让你稳定在冰面和完美适应细雪带来的凝滞和下沉。",
+  "attribute.dswof.freezing_immunity": "冻结免疫",
+  "attribute.dswof.powder_snow_mobility": "细雪行动",
+  "attribute.dswof.ice_grip": "冰面抓地力",
   "dragon_species.dswof.sky_dragon": "天空龙（联调原型）",
   "dragon_species.dswof.sky_dragon.altar.desc": "验证附属龙种、体型与成长资源。当前复用默认外观。",
   "dragon_species.dswof.sky_dragon.banner.desc": "天空龙原型",

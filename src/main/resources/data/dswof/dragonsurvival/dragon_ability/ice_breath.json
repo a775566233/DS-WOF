@@ -1,4 +1,8 @@
 {
+  "usage_blocked": {
+    "condition": "minecraft:reference",
+    "name": "dswof:nether_without_ice"
+  },
   "activation": {
     "activation_type": "dragonsurvival:channeled",
     "animations": {
@@ -53,7 +57,8 @@
               "freeze_immune_multiplier": 0.5,
               "reset_after_ticks": 10,
               "growth_interval_ticks": 10,
-              "expression": "MIN((max_damage + (max_damage * ability_level * 0.5 + growth * 0.35)), (amount + amount * growth * 0.01) + growth_per_unit * exposure_ticks / growth_interval_ticks) * scale"
+              "multiplier": "dswof:ice_breath_multiplier",
+              "expression": "MIN((max_damage + (max_damage * ability_level * 0.5 + growth * 0.35)), ((amount + amount * growth * 0.01) + growth_per_unit * exposure_ticks / growth_interval_ticks) * scale) * multiplier"
             },
             {
               "effect_type": "dragonsurvival:potion",

@@ -51,18 +51,17 @@ dependencies {
 
 `src/main/templates/META-INF/neoforge.mods.toml` 已声明 Dragon Survival、GeckoLib 为必需依赖。发布时，应把版本范围限定到实际测试过的组合；`[2.0.71,)` 不表示后续所有 DS 版本都保证兼容，当前 Minecraft `[1.21.1,1.22)` 和 NeoForge `[21,)` 也比本文验证范围更宽。
 
-开始实现前，需要处理两项工程问题：
+2026-11-07 核查：此前记录的两项工程问题已经解决。`gradle.properties` 当前使用 Parchment `1.21.1` / `2024.11.17`；`gradlew`、`gradlew.bat`、`gradle/wrapper/gradle-wrapper.jar` 均已存在。无需再次替换映射或补装 Wrapper。
 
-- `gradle.properties` 的目标是 Minecraft `1.21.1`，但 Parchment 写成了 `1.21.11` 与 `2025.12.21-nightly-SNAPSHOT`。应改成适配 1.21.1 的映射；官方 DS 该分支使用 `1.21.1` / `2024.11.17`，可以作为选择依据。
-- 当前检出的工程缺少 `gradlew`、`gradlew.bat` 和 `gradle-wrapper.jar`。只有 wrapper properties 不能运行 wrapper。可从匹配的官方 NeoForge MDK 补齐，或先通过 IDEA 的 Gradle 面板运行任务。
-
-本文没有自动修改这些配置。补齐 wrapper 并确认映射后，常用任务为：
+常用任务为：
 
 ```powershell
 .\gradlew.bat runClient
 .\gradlew.bat runServer
 .\gradlew.bat build
 ```
+
+依赖已缓存时可运行 `.\gradlew.bat --offline build`。本次该命令成功，但 `test` 显示 `NO-SOURCE`，表示没有测试源码；构建成功也不代表技能 JSON 已通过游戏的 CODEC 加载。具体排查步骤见 [开发验证与排错](15-development-validation.md)。
 
 NeoForge 1.21.1 官方入口：[开发文档](https://docs.neoforged.net/docs/1.21.1/gettingstarted/)、[MDK 模板](https://github.com/NeoForgeMDKs/MDK-1.21.1-ModDevGradle)。
 

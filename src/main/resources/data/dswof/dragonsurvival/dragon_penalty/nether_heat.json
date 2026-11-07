@@ -1,0 +1,19 @@
+{
+  "condition": {
+    "condition": "minecraft:reference",
+    "name": "dswof:nether_without_ice"
+  },
+  "effect": {
+    "penalty_type": "dragonsurvival:take_damage",
+    "damage_type": "minecraft:in_fire",
+    "amount": 1.5
+  },
+  "trigger": {
+    "penalty_trigger": "dragonsurvival:supply",
+    "supply_type": "dswof:heat_supply",
+    "attribute": "dswof:heat_resistance_time",
+    "trigger_rate": 20,
+    "reduction_rate": 1.0,
+    "regeneration_rate": 0.013
+  }
+}

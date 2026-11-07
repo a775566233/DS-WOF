@@ -1,0 +1,57 @@
+{
+  "activation": {
+    "activation_type": "dragonsurvival:passive"
+  },
+  "upgrade": {
+    "upgrade_type": "dragonsurvival:experience_points",
+    "maximum_level": 4,
+    "experience_cost": {
+      "type": "minecraft:linear",
+      "base": 15.0,
+      "per_level_above_first": 15.0
+    }
+  },
+  "actions": [
+    {
+      "target_selection": {
+        "target_type": "dragonsurvival:self",
+        "applied_effects": {
+          "targeting_mode": "allies_and_self",
+          "entity_effect": [
+            {
+              "effect_type": "dragonsurvival:modifier",
+              "modifiers": [
+                {
+                  "base": {
+                    "id": "dswof:heat_resistance",
+                    "is_hidden": true,
+                    "should_remove_automatically": true
+                  },
+                  "modifiers": [
+                    {
+                      "attribute": "dswof:heat_resistance_time",
+                      "amount": {
+                        "type": "minecraft:linear",
+                        "base": 200.0,
+                        "per_level_above_first": 200.0
+                      },
+                      "operation": "add_value"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "icon": {
+    "texture_entries": [
+      {
+        "from_level": 0,
+        "texture_resource": "dragonsurvival:abilities/cave/contrast_shower_1"
+      }
+    ]
+  }
+}

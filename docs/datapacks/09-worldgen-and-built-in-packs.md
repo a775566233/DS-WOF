@@ -148,6 +148,29 @@ super_exclusion_zone：`other_set` 必填结构集合的注册表集合（可为
 
 查这些包内文件的参数时，按内层目录查同一份手册：ancient → [成长阶段](03-stages.md)，wings → [技能](../06-dragon-ability-json-reference.md)，标签 → [标签文档](07-tags-recipes-and-loot.md)，兼容掉落 → [战利品文档](07-tags-recipes-and-loot.md)。
 
+## 附属内置数据包的注册
+
+在模组资源中放置 `data/<namespace>/datapacks/<包名>/pack.mcmeta` 不会自动注册独立数据包。DS 在 MOD 事件总线的 `AddPackFindersEvent` 中显式注册了自己的包；它不会扫描所有模组里的同名目录。把附属目录改为 `dragonsurvival` 也不会自动加入 DS 的包，因为包发现器从所属模组文件中读取指定目录。
+
+本工程由 `DsWof` 构造器注册 `DsWofDataPacks::addPackFinders`，调用：
+
+```java
+event.addPackFinders(
+    ResourceLocation.fromNamespaceAndPath("dswof", "data/dswof/datapacks/unlock_wings"),
+    PackType.SERVER_DATA,
+    Component.literal("DS-WOF - Unlock Wings"),
+    PackSource.DEFAULT,
+    false,
+    Pack.Position.TOP
+);
+```
+
+第一个参数的 namespace 标识存放数据包的模组，path 是相对该模组资源根目录的包目录。内层 `data/dswof/dragonsurvival/dragon_ability/ice_wings.json` 才决定要覆盖的技能 ID 为 `dswof:ice_wings`；`pack.mcmeta` 的 description 仅控制说明文字，改它不会改变包归属或覆盖对象。这里 `PackSource.DEFAULT` 支持自动加入，`false` 表示允许禁用，`TOP` 让覆盖包的默认优先级高于基础数据。
+
+注册后的包 ID 为 `mod/dswof:data/dswof/datapacks/unlock_wings`，与原版 DS 的包分别启用。重启开发客户端后检查 `/datapack list enabled`；若仅在 available 中，执行 `/datapack enable "mod/dswof:data/dswof/datapacks/unlock_wings" last`，再退出并重新进入世界以加载 DS 动态注册表。已有技能实例的等级处理见[技能实例调试](../15-development-validation.md#5-技能定义与玩家技能实例)。
+
+无需 Java 注册的独立数据包，应将含 `pack.mcmeta` 和 `data/` 的完整包目录放在世界的 `datapacks/` 下，再在该世界启用。
+
 ## 未加载的遗留目录
 
 | 路径 | 文件 | 状态 |

@@ -355,7 +355,74 @@ target.addEffect(new MobEffectInstance(
 }
 ```
 
-状态图标放在 `assets/dswof/textures/mob_effect/frost.png`，通常使用 18×18 PNG。颜色参数不会代替图标贴图。自定义 `MobEffect` 可以进入 Jade 的状态列表，具体显示取决于 Jade 的设置和目标支持情况；它不会自动显示精确的减速百分比或额外屏幕特效。
+### 8.1 `MobEffect` 状态图标
+
+状态注册本身没有填写纹理路径的字段。Minecraft 客户端会根据状态的完整 ID，按约定查找贴图：
+
+```text
+src/main/resources/assets/dswof/textures/mob_effect/frost.png
+```
+
+它对应 Java 注册的 `dswof:frost`。通常使用带透明背景的 18×18 PNG；`new FrostEffect(..., color, ...)` 中的 `color` 只控制状态颜色，不会生成图标，也不能替代 PNG。
+
+状态名称仍需在语言文件中提供：
+
+```json
+{
+  "effect.dswof.frost": "冰冻"
+}
+```
+
+通过 DS 的 `potion` 实体效果施加时，`show_icon` 必须保持为 `true` 才会显示在原版状态列表中；`show_particles` 只控制粒子，不能用来指定图标。`MobEffectInstance` 的 `showIcon` 为 `false` 时，即使 PNG 存在也不会显示。
+
+### 8.2 DS 属性实例（`ModifierEffect`）的图标
+
+如果你说的“状态属性”是技能 JSON 中 `dragonsurvival:modifier` 创建的持续属性实例，它不是 `MobEffect`，因此不会使用 `textures/mob_effect/`。在该实例的 `base` 中填写 `custom_icon`，并确保 `is_hidden` 不是 `true`：
+
+```json
+{
+  "base": {
+    "id": "dswof:heat_resistance",
+    "custom_icon": "dswof:textures/ability_effect/heat_resistance.png",
+    "is_hidden": false,
+    "should_remove_automatically": true
+  },
+  "modifiers": [
+    {
+      "attribute": "dswof:heat_resistance_time",
+      "amount": 200.0,
+      "operation": "add_value"
+    }
+  ]
+}
+```
+
+对应文件为：
+
+```text
+src/main/resources/assets/dswof/textures/ability_effect/heat_resistance.png
+```
+
+`custom_icon` 是完整资源 ID，包含 `textures/` 和 `.png`。你当前示例中的 `"is_hidden": true` 会隐藏 DS 的持续效果提示；改为 `false` 后，图标才会出现在 DS 修改后的状态提示列表中。属性自身（例如 `dswof:heat_resistance_time`）没有单独的图标字段；它的名称来自 `attribute.dswof.heat_resistance_time` 翻译，图标由 `base.custom_icon` 提供。`attribute` 中填写的 ID 必须已经注册；图标不会替代属性注册。
+
+### 8.3 技能顶层图标不是状态图标
+
+技能 JSON 顶层的 `icon.texture_entries[].texture_resource` 用于技能菜单和技能效果提示。它采用 GUI sprite 规则，例如：
+
+```json
+"icon": {
+  "texture_entries": [
+    {
+      "from_level": 0,
+      "texture_resource": "dswof:abilities/heat_resistance_1"
+    }
+  ]
+}
+```
+
+对应文件是 `assets/dswof/textures/gui/sprites/abilities/heat_resistance_1.png`，配置中省略 `textures/` 和 `.png`。这与 `MobEffect` 的 `textures/mob_effect/` 和持续实例的 `base.custom_icon` 是三套不同的路径规则。
+
+自定义 `MobEffect` 可以进入 Jade 的状态列表，具体显示取决于 Jade 的设置和目标支持情况；它不会自动显示精确的减速百分比或额外屏幕特效。
 
 注册并重启游戏后，可在允许命令的测试世界执行：
 
