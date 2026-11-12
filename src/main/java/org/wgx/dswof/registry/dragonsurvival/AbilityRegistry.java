@@ -6,6 +6,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.wgx.dswof.DsWof;
+import org.wgx.dswof.dragonsurvival.dragon_ability.ClawOfFrostAbilityEntityEffect;
 import org.wgx.dswof.dragonsurvival.dragon_ability.IceBreathAbilityEntityEffect;
 
 @EventBusSubscriber(modid = DsWof.MODID)
@@ -14,8 +15,11 @@ public class AbilityRegistry {
     public static void register(RegisterEvent event) {
         if (event.getRegistry() == AbilityEntityEffect.REGISTRY) {
             event.register(AbilityEntityEffect.REGISTRY_KEY,
-                    ResourceLocation.fromNamespaceAndPath("dswof", "ice_breath_damage"),
+                    ResourceLocation.fromNamespaceAndPath("dswof", IceBreathAbilityEntityEffect.ID),
                     () -> IceBreathAbilityEntityEffect.CODEC);
+            event.register(AbilityEntityEffect.REGISTRY_KEY,
+                    ResourceLocation.fromNamespaceAndPath("dswof", ClawOfFrostAbilityEntityEffect.ID),
+                    () -> ClawOfFrostAbilityEntityEffect.CODEC);
         }
     }
 }

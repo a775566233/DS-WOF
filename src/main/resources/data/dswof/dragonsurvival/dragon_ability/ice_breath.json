@@ -85,31 +85,6 @@
         }
       },
       "trigger_rate": 10.0
-    },
-    {
-      "target_selection": {
-        "applied_effects": {
-          "entity_effect": [
-            {
-              "effect_type": "dragonsurvival:breath_particles",
-              "main_particle": {
-                "type": "dragonsurvival:poison",
-                "duration": 37.0,
-                "swirls": true
-              },
-              "secondary_particle": {
-                "type": "dragonsurvival:large_poison",
-                "duration": 37.0,
-                "swirls": false
-              },
-              "speed_per_growth": 0.02,
-              "spread": 0.04
-            }
-          ],
-          "targeting_mode": "all"
-        },
-        "target_type": "dragonsurvival:self"
-      }
     }
   ],
   "icon": {

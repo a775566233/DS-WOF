@@ -90,6 +90,7 @@ public record IceBreathAbilityEntityEffect(
             EXPRESSION_CODEC.optionalFieldOf("expression", DEFAULT_EXPRESSION)
                     .forGetter(IceBreathAbilityEntityEffect::expression)
     ).apply(instance, IceBreathAbilityEntityEffect::new));
+    public static final String ID = "ice_breath_damage";
 
     //自定义效果每次被调用时，以施法者 UUID、目标 UUID 和技能 ID 组成 key，记录 lastSeen 与 exposureTicks：
     private static final Map<Key, State> STATES = new HashMap<>();
