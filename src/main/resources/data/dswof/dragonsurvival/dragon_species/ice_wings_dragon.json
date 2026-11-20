@@ -2,7 +2,16 @@
   "bodies": [
     "dswof:ice_wings_dragon"
   ],
-  "abilities": ["dswof:ice_breath", "dswof:heat_resistance", "dswof:ice_magic", "dswof:ice_adaptation", "dswof:ice_wings", "dswof:claw_of_frost"],
+  "abilities": [
+    "dswof:ice_breath",
+    "dswof:heat_resistance",
+    "dswof:ice_magic",
+    "dswof:ice_adaptation",
+    "dswof:ice_wings",
+    "dswof:claw_of_frost",
+    "dswof:ice_claws_and_teeth",
+    "dswof:ice_athletics"
+  ],
   "penalties": ["dswof:nether_heat", "dswof:hot_ice_breath"],
   "misc_resources": {
     "altar_banner": "dragonsurvival:textures/gui/custom/altar/cave/altar_icon.png",

@@ -1,10 +1,13 @@
 package org.wgx.dswof.events;
 
+import by.dragonsurvivalteam.dragonsurvival.common.capability.DragonStateProvider;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
@@ -13,6 +16,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.wgx.dswof.DsWof;
+import org.wgx.dswof.dragonsurvival.dragon_ability.IceClawsAndTeethAbilityEntityEffect;
+import org.wgx.dswof.registry.dragonsurvival.DsWofAttributes;
 
 @EventBusSubscriber(modid = DsWof.MODID)
 public final class SwordMiningEvents {
@@ -20,8 +25,15 @@ public final class SwordMiningEvents {
 
     @SubscribeEvent
     public static void onBreakSpeed(PlayerEvent.BreakSpeed event) {
-        Player player = event.getEntity();
-        float base = swordDestroySpeed(event.getState());
+        var player = event.getEntity();
+//        if (!IceClawsAndTeethAbilityEntityEffect.isTargetDragon(player)) {
+//            return;
+//        }
+        var attribute = player.getAttribute(DsWofAttributes.ICE_CLAW_AND_TEETH);
+        if (!DragonStateProvider.isDragon(player) || attribute == null || attribute.getValue() < 1) {
+            return;
+        }
+        var base = swordDestroySpeed(event.getState());
         event.setNewSpeed(applyVanillaModifiers(player, base));
     }
 
@@ -44,7 +56,7 @@ public final class SwordMiningEvents {
         if (MobEffectUtil.hasDigSpeed(player)) {
             speed *= 1.0F + (MobEffectUtil.getDigSpeedAmplification(player) + 1) * 0.2F;
         }
-        MobEffectInstance fatigue = player.getEffect(MobEffects.DIG_SLOWDOWN);
+        var fatigue = player.getEffect(MobEffects.DIG_SLOWDOWN);
         if (fatigue != null) {
             float mul = switch (fatigue.getAmplifier()) {
                 case 0 -> 0.3F;
