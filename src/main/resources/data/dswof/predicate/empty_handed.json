@@ -1,19 +1,11 @@
 {
-  "condition": "minecraft:all_of",
-  "terms": [
-    {
-      "condition": "minecraft:entity_properties",
-      "entity": "this",
-      "predicate": {
-        "type": "minecraft:player",
-        "equipment": {
-          "mainhand": {
-            "count": {
-              "max": 0
-            }
-          }
-        }
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "equipment": {
+      "mainhand": {
+        "count": { "max": 0 }
       }
     }
-  ]
+  }
 }
