@@ -25,6 +25,8 @@ public class DsWofAttributes {
     public static final Holder<Attribute> POWDER_SNOW_MOBILITY;
     public static final Holder<Attribute> ICE_GRIP;
 
+    public static final Holder<Attribute> ICE_CLAW_AND_TEETH;
+
     @SubscribeEvent
     public static void attachAttributes(EntityAttributeModificationEvent event) {
         event.add(EntityType.PLAYER, HEAT_RESISTANCE_TIME);
@@ -32,6 +34,8 @@ public class DsWofAttributes {
         event.add(EntityType.PLAYER, FREEZING_IMMUNITY);
         event.add(EntityType.PLAYER, POWDER_SNOW_MOBILITY);
         event.add(EntityType.PLAYER, ICE_GRIP);
+
+        event.add(EntityType.PLAYER, ICE_CLAW_AND_TEETH);
     }
 
     static {
@@ -41,6 +45,8 @@ public class DsWofAttributes {
         FREEZING_IMMUNITY = registerTrait("freezing_immunity");
         POWDER_SNOW_MOBILITY = registerTrait("powder_snow_mobility");
         ICE_GRIP = registerTrait("ice_grip");
+
+        ICE_CLAW_AND_TEETH = registerTrait("ice_claw_and_teeth");
     }
 
     private static Holder<Attribute> registerTrait(String name) {
